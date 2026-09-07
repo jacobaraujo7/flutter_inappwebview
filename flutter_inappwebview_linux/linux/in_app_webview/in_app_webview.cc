@@ -6210,6 +6210,10 @@ void InAppWebView::setMicrophoneCaptureState(int state) {
 std::optional<std::string> InAppWebView::getMetaThemeColor() const {
   if (webview_ == nullptr) return std::nullopt;
   
+#if !WEBKIT_CHECK_VERSION(2, 50, 0)
+  // webkit_web_view_get_theme_color() requires WebKit >= 2.50 (Debian 13 ships WPE 2.48).
+  return std::nullopt;
+#else
   WebKitColor color;
   gboolean hasColor = webkit_web_view_get_theme_color(webview_, &color);
   
@@ -6238,6 +6242,7 @@ std::optional<std::string> InAppWebView::getMetaThemeColor() const {
   }
   
   return std::string(hexColor);
+#endif
 }
 
 // === Audio State (Playing and Mute) ===
